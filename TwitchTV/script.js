@@ -1,51 +1,78 @@
-var channels = ["freecodecamp", "storbeck", "terakilobyte", "habathcx","RobotCaleb","thomasballinger","noobs2ninjas","beohoff","ESL_SC2"];
+
+function getStreams(channels) {
+  // Transform an array of channel names into an array of Promises
+  // representing the asynchronous action of getting the info
+  // about each channels stream.
+  const streamData = channels.map(
+    channel => $.getJSON(
+      'https://api.twitch.tv/kraken/streams/'+channel+'?callback=?'
+    )
+  );
+  //Transform an array of channel names into an array holding info about 
+  //each channel
+  const channelData = channels.map(
+  	channel => $.getJSON(
+  	  'https://api.twitch.tv/kraken/channels/'+channel+'?callback=?'
+  	)
+  );
+  // now I need to transform the pertinent info from both streamData and channelData
+  //into an array of TwitchUsers
+
+
+  // Return a new promise which will resolve when *all* channels
+  // have been queried.
+  return Promise.all(streamData);
+}
+function determineStreamStatus(element, index, array){
+	console.log("here");
+	if(element.stream == null){
+		twitchUsers[index].online = "offline";
+		console.log("offline");
+	}
+	else if (typeof element.stream != "undefined") {
+		twitchUsers[index].online = "non-existant user";
+		console.log("non-existant");
+	}
+	else{
+		twitchUsers[index].online = "online";
+		console.log("online")
+	}
+
+}
+
+const channels = [
+  "freecodecamp", "storbeck", "terakilobyte", "habathcx",
+  "RobotCaleb", "thomasballinger", "noobs2ninjas", "beohoff",
+  "ESL_SC2", "brunofin"
+];
+var streamData = [];
 var channelData = [];
-$(document).ready(function(){
-  getDataFromAPI();
-  		  		displayTwitchStreamers();
-});
-function getDataFromAPI(){
-	//need name, display_name and logo from channels, I need offline/onlene status from streams and game if online -probably not regular name
-	for(var i=0; i<channels.length; i++){
-		$.getJSON('https://api.twitch.tv/kraken/streams/'+channels[i]+'?callback=?', function(data) {
-			channelData.push(data);
-	  		console.log(data);
-	  		console.log(data.stream);
-	  		console.log(data._links.channel);
-	  		console.log(data._links.self);
-		});
-	}
-	for(var j=0; j<channels.length; j++){
-		$.getJSON('https://api.twitch.tv/kraken/channels/'+channels[j]+'?callback=?', function(data) {
-			channelData.push(data);
-	  		console.log(data);
-	  		console.log(data.stream);
-	  		console.log(data._links.channel);
-	  		console.log(data._links.self);
-		});
-	}
-		console.log("channel data length" + channelData.length);
+var twitchUsers = [];
+getStreams(channels).then(
+  // infos is an array of resolved data about the channels
+  // I will need to take the channel info and display it
+  infos => infos.forEach(
+    info => console.log(info)
+  )
+);
 
-}
-function displayTwitchStreamers(){
 
-	 var theTemplateScript = $("#twitch-streamers-template").html();
-	 var theTemplate = Handlebars.compile(theTemplateScript);
-	 var templateData = [];
-	 console.log(channelData.length);
-	 for(var i=0; i<channelData.length; i++){
-	 	if(data[i].stream == null){
-	 		console.log("test");
-	 	}
-	 }
 
-	 var context = {
-    	streamers: ["o","2"]
-  	};
-	  // Pass our data to the template
-  	var theCompiledHtml = theTemplate(context);
 
-  	// Add the compiled html to the page
-  	$(document.body).append(theCompiledHtml);
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
